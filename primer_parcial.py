@@ -15,19 +15,18 @@ lista_jugadores = data["jugadores"]
 
 
 
-def ingresar_opcion(opciones:list) -> str:
-
+def validar_nombre_regex(patron:str,contenido:str)->bool:
     """
-    solicita una opcion y verifica si esta esta en la lista de opciones
-    admite un dato tipo lista de opciones
-    retorna la opcion ingresada si es valida
+    valida con expresioner regulares 
+    Admite un dato tipo patron para validar y otro contenido el cual se valida
+    retorna True o False dependiendo si matchea
     """
-    while True:
-        opcion = input(f"Ingresar una de las siguientes opciones: {opciones}").lower()
-        if opcion not in opciones:
-            print("Opción no válida. Inténtalo de nuevo.")
-        else:
-            return opcion
+    
+    contenido = contenido.lower().capitalize()
+    if re.search(patron,contenido) is None:
+        return False
+    else:      
+        return True
 
 
 def validar_numeros_regex(patron:str)->int:
@@ -46,7 +45,7 @@ def validar_numeros_regex(patron:str)->int:
             return int(contenido)
 
 
-def mostrar_jugadores_formateado(lista_jugadores:list[dict])->None:
+def mostrar_jugadores_formateado_posicion(lista_jugadores:list[dict])->None:
     """
     imprime en pantalla con el formateo "Nombre Jugador : ----- Posicion :
     admite und ato tipo lista de jugadores
@@ -87,7 +86,7 @@ def seleccionar_jugador_por_indice(lista_jugadores:list[dict])->dict:
             
                     
     
-        print("----------------------------------------------------------------------------------------------------------------------------------------------------------------")
+        print("---------------------------------------------------------------------------------------------------------------------------------------------------------------")
         print(acumulador_estadisticas)
         return jugador
     else:
@@ -103,6 +102,7 @@ def mostrar_indice_jugador(lista_jugadores:list[dict])->None:
     contador = -1
     for jugador in lista_jugadores:
         contador += 1
+        #imprime formateado el indice del jugador y al lado el nombre de ese
         print("{0}.{1}".format(contador,jugador["nombre"]))
 
 
@@ -119,7 +119,7 @@ def genera_texto_formateado(jugador_dict: dict)-> str:
     jugador_estadisticas = jugador_dict["estadisticas"]
     
     
-    #agrego primedo nombre y posicion en las dos listas para luego agregar las estadisticas
+    #agrego primero nombre y posicion en las dos listas para luego agregar las estadisticas
     lista_claves = ["nombre", "posicion"]
     lista_valores = [jugador_dict["nombre"],jugador_dict["posicion"]]
 
@@ -150,53 +150,39 @@ def guardar_archivo(ruta:str , contenido:str)->bool:
          print("Error al crear el archivo: {}".format(ruta))
 
 
-def crear_lista_opciones(lista_jugadores:list,key:str)->list[str]:
+def crear_lista_opciones(lista_jugadores:list[dict],key:str)->list[str]:
     """crea una lista de opciones en string de la lista y key ingresados
     admite dos parametros uno tipo lista de jugadores y otro tipo key
     retorna una lista de opciones con elementos en str"""
 
     lista_opciones = []  
-
-    for jugador in lista_jugadores:
-        lista_opciones.append("{}".format(jugador[key]))  
-    
-    return lista_opciones
-
-
-def ingresar_opcion(opciones: list) -> str:
-    """pide y valida la opcion ingresada
-    admite un dato tipo lista de opciones con el que se valida 
-    retorna la opcion ingresada si esta es valida"""
-
-
-    while True:
-        if len(opciones) > 0:
+    if len(lista_jugadores) <= 0:
+        print("ERROR, Lista vacia")
+    else:
+        for jugador in lista_jugadores:
+            lista_opciones.append("{}".format(jugador[key]))  
         
-            opcion =input("{}\ningrese una de las siguientes opciones:".format("\n".join(opciones))) 
-            if opcion not in opciones:
-                print("Opción no válida. Inténtalo de nuevo.")
-            else:
-                return opcion
-        else:
-            print("\nError, lista vacia\n")
-            break
+        return lista_opciones
 
 
-def mostrar_logros_jugador(lista_jugadores:list[dict])->float:
+
+def mostrar_logros(lista_jugadores:list[dict])->None:
     """
-    muestra los logros  del jugador seleccionado
-    admite un dato tipo lista de jugadores   
+    imprime en pantalla la lista de jugadores para ingresar y validar 
+    admite un dato tipo lista de jugadores
+    no retorna nada imprime todos los datos del jugador ingresado
     """
-    
-        
-    opcion = ingresar_opcion(crear_lista_opciones(lista_jugadores,"nombre"))
-    #valida que ingrese una de las opciones
-    strig_logros = "\nLogros :\n"
+    flag = True
+    print("\n".join(crear_lista_opciones(lista_jugadores,"nombre")))
+    contenido = input("ingrese un nombre")
     for jugador in lista_jugadores:
-        if jugador["nombre"] == opcion:
-            for logros in jugador["logros"]:
-                strig_logros += f"{logros}\n"
-    return strig_logros 
+        if validar_nombre_regex(jugador["nombre"][0:4],contenido):
+            flag = False
+            logros = jugador["logros"]
+            for logro in logros:
+                print(logro)
+    if flag:
+        print("no encontro algun jugador")
          
 
 def calcular_promedio_en_estadisticas(lista_jugadores:list[dict],key:str)->float:
@@ -233,24 +219,29 @@ def imprimir_datos_estadisticos_jugadores(lista_jugadores:list[dict],key:str)->N
         print("ERROR, lista vacia")
 
 
-def mostrar_salon_de_la_fama(lista_jugadores:list[dict]):
+def mostrar_salon_de_la_fama(lista_jugadores:list[dict])->None:
     """
-    Solcita el nobre de un jugador y verifica si dicho jugador pertenece al miembro del salon de la fama de baloncesto
+    pide que ingrese vagamente el nombre de un jugador y lo busca en la lista de jugadores e imprime si pertenece al salon de la fama
     admite un dato tipo lista de jugadores
-    no retorna nada imprime en pantalla si el jugador pertenece o no al salon de la fama de baloncesto
+    no retorna nada
     """
-    
-    opcion = ingresar_opcion(crear_lista_opciones(lista_jugadores,"nombre"))
+
+    print("\n".join(crear_lista_opciones(lista_jugadores,"nombre")))
+    flag_encontro = True
+    contenido = input("ingrese un nombre")
+
     for jugador in lista_jugadores:
-        if opcion == jugador["nombre"]:
-            salon_fama = jugador["logros"][-1]
-            if re.search(r"Miembro del Salon de la Fama del Baloncesto$",salon_fama) is not None:
-                    print("------------------\n{0} Es miembro del salon de la fama\n------------------".format(jugador["nombre"]))
-            else:
-                     print("--------------\n{0} No es miembro del salon de la fama\n---------------".format(jugador["nombre"]))  
+        if validar_nombre_regex(jugador["nombre"][0:4],contenido):
+                flag_encontro = False      
+                if jugador["logros"][-1] == r"Miembro del Salon de la Fama del Baloncesto":
+                    print("\n-----{0} es {1}-----\n".format(jugador["nombre"] ,jugador["logros"][-1]))
+                else:
+                    print("\n-----{0} no es {1}-----\n".format(jugador["nombre"] ,jugador["logros"][-1]))
+    if flag_encontro == True:
+        print("no encontro un jugador valido")
                    
 
-def calcular_max_min_estadisticas(lista_jugadores:list,key:str,max_or_min:True)->str:
+def calcular_max_min_estadisticas(lista_jugadores:list[dict],key:str,max_or_min:True)->str:
         """
         Calcula e impime el maximo o el minimo de una estadistica de los jugadores
         admite 3 datos uno tipo lista de jugador, otro tipo key:str el cual es la estadistica a calcular y un boolean para calcular maximo o minimo
@@ -286,11 +277,11 @@ def calcular_max_min_estadisticas(lista_jugadores:list,key:str,max_or_min:True)-
             print("ERROR, La lista esta vacia")
 
 
-def filtrar_lista_mayor_que_un_valor(lista_jugadores:list,key:str)->list[dict]:
+def filtrar_lista_mayor_que_un_valor(lista_jugadores:list[dict],key:str)->list[dict]:
     """
     El código verifica si un valor dado ingresado por el usuario es un número, y si lo es, lo convierte en un número entero luego compara el valor dado con las estadisticas de los jugadores si lo superan (True) o estan debajo (False)
     admite 3 parametros, uno tipo lista de jugadores, otro la key o estadistica a comparar y el ultimo una bandera que indica supera el valor ingresado o no supera
-    retorna una lista con los jugadores, nada imprime en pantalla aquellos jugadores validos""",
+    retorna una lista con los jugadores""",
     if len(lista_jugadores) > 0:
            valor_ingresada = validar_numeros_regex(r"[0-9]+")
         
@@ -312,22 +303,24 @@ def filtrar_lista_mayor_que_un_valor(lista_jugadores:list,key:str)->list[dict]:
         print("ERROR, lista vacia")
 
 
-def calcula_promedio_ignorando_al_peor(lista_jugadores:list,key:str)->None:
+def calcula_promedio_ignorando_al_peor(lista_jugadores:list[dict],key:str)->None:
     """
-    El código crea una nueva lista llamada "lista_aux" y luego elimina al jugador con el rendimiento más bajo en una estadística específica de la lista original de jugadores. Luego calcula el promedio de esa estadística para los jugadores restantes en la lista e imprime el resultado.
+    calcula el promedio de una estadistica especifica ignorando al jugador con peor rendimiento ene sta.
     Admite 2 parametros, uno tipo lista de jugadores y otro tipo key que es la estadistica a promediar
     No retorna nada imprime en pantalla el jugador ignorado, y el promedio calculado
     """
-    lista_aux =[]
-    print("Se ignorara al jugador con menor desempeño en (..{}..) a la hora de promediar".format(key.replace("_"," ")))
-    nombre_menor  = calcular_max_min_estadisticas(lista_jugadores,key,False)
-    for jugadores in lista_jugadores:
-        if jugadores["nombre"] != nombre_menor:
-            lista_aux.append(jugadores)
-    print("El promedio total de {1} es {0}".format(calcular_promedio_en_estadisticas(lista_aux, key),key.replace("_"," ")))
+    if len(lista_jugadores) > 0:
+        lista_aux =[]
+        print("Se ignorara al jugador con menor desempeño en (..{}..) a la hora de promediar".format(key.replace("_"," ")))
+        nombre_menor  = calcular_max_min_estadisticas(lista_jugadores,key,False)
+        for jugadores in lista_jugadores:
+            if jugadores["nombre"] != nombre_menor:
+                lista_aux.append(jugadores)
+        print("El promedio total de {1} es {0}".format(calcular_promedio_en_estadisticas(lista_aux, key),key.replace("_"," ")))
+    else:
+        print("Error lista vacia")
 
-
-def calcula_jugador_mas_logros(lista_jugadores:list)->str:
+def calcula_jugador_mas_logros(lista_jugadores:list[dict])->str:
         """El código busca al jugador con más logros en una lista de jugadores y devuelve un string que indica el nombre del jugador con más logros.
         admite un dato tipo lista de jugadores
         retorna el nobre del jugador con mas logros
@@ -346,7 +339,7 @@ def calcula_jugador_mas_logros(lista_jugadores:list)->str:
             print("ERROR, Lista vacia")
 
 
-def nuevo_ordenar_equipo_por_posicion_nombre(lista_jugadores:list,nombre_o_posicio:str)->list[dict]:
+def ordenar_equipo_por_posicion_nombre(lista_jugadores:list,nombre_o_posicio:str)->list[dict]:
     '''
     Ordena una lista de jugadores según la posicion o el nombre alfabeticamente
     Recibe una lista de jugadores y una key que evalua por que dato ordena
@@ -395,7 +388,7 @@ def main():
         opcion = validar_numeros_regex(r"[1-9]|1[0-9]|2[0-2]")
         match opcion:
             case 1:
-                mostrar_jugadores_formateado(lista_jugadores)
+                mostrar_jugadores_formateado_posicion(lista_jugadores)
             case 2:
                  jugador_encontrado = (seleccionar_jugador_por_indice(lista_jugadores))               
             case 3:
@@ -410,10 +403,10 @@ def main():
                     print("Primero debe entrar al punto 2")
             case 4:
                 
-                print(mostrar_logros_jugador(lista_jugadores))
+                mostrar_logros(lista_jugadores)
             case 5:
                 print("\nNOMBRES ORDENADOS ASCENDENTEMENTE:\n")
-                lista_ordenada_nombres =(nuevo_ordenar_equipo_por_posicion_nombre(lista_jugadores,"nombre"))
+                lista_ordenada_nombres =(ordenar_equipo_por_posicion_nombre(lista_jugadores,"nombre"))
                 mostrar_indice_jugador(lista_ordenada_nombres)
         
                 
@@ -457,8 +450,8 @@ def main():
                 calcular_max_min_estadisticas(lista_jugadores,"temporadas",True)
             case 20:
                 lista_filtrada_tiros_campo = filtrar_lista_mayor_que_un_valor(lista_jugadores,"porcentaje_tiros_de_campo")
-                lista_ordenada             = nuevo_ordenar_equipo_por_posicion_nombre(lista_filtrada_tiros_campo,"posicion")
-                mostrar_jugadores_formateado(lista_ordenada)               
+                lista_ordenada             = ordenar_equipo_por_posicion_nombre(lista_filtrada_tiros_campo,"posicion")
+                mostrar_jugadores_formateado_posicion(lista_ordenada)               
                                                       
             case 21:
                 print("Ejercicio sin hacer")
@@ -481,5 +474,47 @@ main()
 
 
 
+
+
+
+def mostrar_salon_de_la_fama(lista_jugadores:list)->None:
+    """
+    pide que ingrese vagamente el nombre de un jugador y lo busca en la lista de jugadores e imprime si pertenece al salon de la fama
+    admite un dato tipo lista de jugadores
+    no retorna nada
+    """
+
+    print("\n".join(crear_lista_opciones(lista_jugadores,"nombre")))
+    flag_encontro = True
+    contenido = input("ingrese un nombre")
+
+    for jugador in lista_jugadores:
+        if validar_nombre_regex(jugador["nombre"][0:4],contenido):
+                flag_encontro = False      
+                if jugador["logros"][-1] == r"Miembro del Salon de la Fama del Baloncesto":
+                    print("{0} es {1}".format(jugador["nombre"] ,jugador["logros"][-1]))
+                else:
+                    print("{0} no es {1}".format(jugador["nombre"] ,jugador["logros"][-1]))
+    if flag_encontro == True:
+        print("no encontro un jugador valido")
+                
+
+
+   
+
+def mostrar_logros(lista_jugadores:list):
+    flag = True
+    print("\n".join(crear_lista_opciones(lista_jugadores,"nombre")))
+    contenido = input("ingrese un nombre")
+    for jugador in lista_jugadores:
+        if validar_nombre_regex(jugador["nombre"][0:4],contenido):
+            flag = False
+            logros = jugador["logros"]
+            for logro in logros:
+                print(logro)
+    if flag:
+        print("no encontro algun jugador")
+        
+mostrar_logros(lista_jugadores)
 
 
