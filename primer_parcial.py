@@ -1,7 +1,6 @@
 import re
 import json
-
-
+#Axel Pazos Division 1H
                 
 def leer_archivo(ruta:str)->list[dict]:
     """abre un archivo y lo guarda en una variable llamada diccionario
