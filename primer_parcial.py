@@ -38,7 +38,7 @@ def validar_numeros_regex(patron:str)->int:
     flag = True
     contenido = input("ingrese un valor")
     while flag:
-        if re.search(patron,contenido) is None:
+        if re.match(patron,contenido) is None:
             contenido = input("opcion no valida reingrese el valor")
         else:
             flag = False
@@ -477,44 +477,6 @@ main()
 
 
 
-def mostrar_salon_de_la_fama(lista_jugadores:list)->None:
-    """
-    pide que ingrese vagamente el nombre de un jugador y lo busca en la lista de jugadores e imprime si pertenece al salon de la fama
-    admite un dato tipo lista de jugadores
-    no retorna nada
-    """
 
-    print("\n".join(crear_lista_opciones(lista_jugadores,"nombre")))
-    flag_encontro = True
-    contenido = input("ingrese un nombre")
-
-    for jugador in lista_jugadores:
-        if validar_nombre_regex(jugador["nombre"][0:4],contenido):
-                flag_encontro = False      
-                if jugador["logros"][-1] == r"Miembro del Salon de la Fama del Baloncesto":
-                    print("{0} es {1}".format(jugador["nombre"] ,jugador["logros"][-1]))
-                else:
-                    print("{0} no es {1}".format(jugador["nombre"] ,jugador["logros"][-1]))
-    if flag_encontro == True:
-        print("no encontro un jugador valido")
-                
-
-
-   
-
-def mostrar_logros(lista_jugadores:list):
-    flag = True
-    print("\n".join(crear_lista_opciones(lista_jugadores,"nombre")))
-    contenido = input("ingrese un nombre")
-    for jugador in lista_jugadores:
-        if validar_nombre_regex(jugador["nombre"][0:4],contenido):
-            flag = False
-            logros = jugador["logros"]
-            for logro in logros:
-                print(logro)
-    if flag:
-        print("no encontro algun jugador")
-        
-mostrar_logros(lista_jugadores)
 
 
