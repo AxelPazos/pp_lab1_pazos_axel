@@ -62,7 +62,7 @@ def seleccionar_jugador_por_indice(lista_jugadores:list[dict])->dict:
     retorna una diccionario del jugador seleccionado y imprime las estadisticas de este"""
    
     mostrar_indice_jugador(lista_jugadores)
-    indice_jugador = validar_numeros_regex(r"^[0-9]|1[0-1]$")
+    indice_jugador = validar_numeros_regex(r"^[0-9]$|^1[0-1]$")
          
     if len(lista_jugadores) > 0:
 
@@ -86,7 +86,7 @@ def seleccionar_jugador_por_indice(lista_jugadores:list[dict])->dict:
             
                     
     
-        print("---------------------------------------------------------------------------------------------------------------------------------------------------------------")
+        print("-------------------------------------------------------------------------------------------------------------------------")
         print(acumulador_estadisticas)
         return jugador
     else:
@@ -283,7 +283,7 @@ def filtrar_lista_mayor_que_un_valor(lista_jugadores:list[dict],key:str)->list[d
     admite 3 parametros, uno tipo lista de jugadores, otro la key o estadistica a comparar y el ultimo una bandera que indica supera el valor ingresado o no supera
     retorna una lista con los jugadores""",
     if len(lista_jugadores) > 0:
-           valor_ingresada = validar_numeros_regex(r"[0-9]+")
+           valor_ingresada = validar_numeros_regex(r"^[0-9]+")
         
            lista_aux = []
 
@@ -385,7 +385,7 @@ def main():
         print("21. BONUS ")
         print("22.exit")
 
-        opcion = validar_numeros_regex(r"[1-9]|1[0-9]|2[0-2]")
+        opcion = validar_numeros_regex(r"^[1-9]$|^1[0-9]$|^2[0-2]$")
         match opcion:
             case 1:
                 mostrar_jugadores_formateado_posicion(lista_jugadores)
