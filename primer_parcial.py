@@ -320,6 +320,7 @@ def calcula_promedio_ignorando_al_peor(lista_jugadores:list[dict],key:str)->None
     else:
         print("Error lista vacia")
 
+
 def calcula_jugador_mas_logros(lista_jugadores:list[dict])->str:
         """El código busca al jugador con más logros en una lista de jugadores y devuelve un string que indica el nombre del jugador con más logros.
         admite un dato tipo lista de jugadores
@@ -355,6 +356,26 @@ def ordenar_equipo_por_posicion_nombre(lista_jugadores:list,nombre_o_posicio:str
                     lista_jugadores[indice_A],lista_jugadores[indice_A+1] = lista_jugadores[indice_A+1],lista_jugadores[indice_A]
                     flag_swap = True
     return lista_jugadores  
+
+def ordenar_equipo_por_estadisticas_descendentemente(lista_jugadores:list,estadistica:str)->list[dict]:
+    '''
+    Ordena una lista de jugadores según la posicion o el nombre alfabeticamente
+    Recibe una lista de jugadores y una key que evalua por que dato ordena
+    Devuelve la lista ordenada
+    '''
+    rango_a = len(lista_jugadores)
+    flag_swap = True
+    while(flag_swap):
+        flag_swap = False
+        rango_a = rango_a - 1
+        for indice_A in range(rango_a):
+                if  lista_jugadores[indice_A]["estadisticas"][estadistica] < lista_jugadores[indice_A+1]["estadisticas"][estadistica]:
+                    lista_jugadores[indice_A],lista_jugadores[indice_A+1] = lista_jugadores[indice_A+1],lista_jugadores[indice_A]
+                    flag_swap = True
+    return lista_jugadores 
+
+
+
 
 
 def main():
@@ -459,17 +480,88 @@ def main():
                 print("Salida...")
                 break
 
+"bonus incompleto"
+lista_ranking_por_puntos=(ordenar_equipo_por_estadisticas_descendentemente(lista_jugadores,"puntos_totales"))
+lista_ranking_por_rebotes=(ordenar_equipo_por_estadisticas_descendentemente(lista_jugadores,"rebotes_totales"))
+lista_ranking_por_asistencias=(ordenar_equipo_por_estadisticas_descendentemente(lista_jugadores,"asistencias_totales"))
+lista_ranking_por_robos=(ordenar_equipo_por_estadisticas_descendentemente(lista_jugadores,"robos_totales"))
+lista_Titulares = ["Jugador" , "Puntos" , "Rebotes" , "Asistencias" ,  "Robos"]
 
 
 
-      
-          
+"""Determinar la cantidad de jugadores que hay por cada posición.
+Ejemplo:
+Base: 2
+Alero: 3
+...
+"""
+def contador_de_posiciones(lista_jugadores:list)->None:
+    contador_base = 0
+    contador_alero = 0
+    contador_escolta = 0
+    contador_pivot = 0
+    contador_ala = 0
+    for jugador in lista_jugadores:
+        if jugador["posicion"] == "Base":
+            contador_base += 1
+        elif jugador["posicion"] == "Alero":
+            contador_alero += 1
+        elif jugador["posicion"] == "Escolta":
+            contador_escolta += 1
+        elif jugador["posicion"] == "Pivot":
+            contador_pivot += 1
+        elif jugador["posicion"] == "Ala-Pivot":
+            contador_ala += 1
+    print("la cantidad de jugadores con posicion base es {}".format(contador_base))
+    print("la cantidad de jugadores con posicion alero es {}".format(contador_alero))
+    print("la cantidad de jugadores con posicion escolta es {}".format(contador_escolta))
+    print("la cantidad de jugadores con posicion pivot es {}".format(contador_pivot))
+    print("la cantidad de jugadores con posicion ala-pivot es {}".format(contador_ala))
+
+
+"""Determinar qué jugador tiene las mejores estadísticas en cada valor. La salida por pantalla debe tener un formato similar a este:
+Mayor cantidad de temporadas: Karl Malone (19)
+Mayor cantidad de puntos totales: Karl Malon (36928)
+…
+"""
+def imprimir_mejor_estadistica(lista_jugadores:list,key:str):
+    lista_aux = ordenar_equipo_por_estadisticas_descendentemente(lista_jugadores,key)
+    print("El jugador con mas {1} es {0}".format(lista_aux[1]["nombre"],key))
+
+
+def jugador_mejores_estadisticas(lista_jugadores:list):
+    for jugador in lista_jugadores[1]["estadisticas"]:
+        imprimir_mejor_estadistica(lista_jugadores,jugador)
+ 
+    
+"""Determinar qué jugador tiene las mejores estadísticas de todos."""    
+def mostrar_jugador_con_mejores_estadisticas_totales(lista_jugadores):
+        lista_mejor_totales = []
+        for estadistica in lista_jugadores[1]["estadisticas"]:
+            lista_mejor_por_estadistica = ordenar_equipo_por_estadisticas_descendentemente(lista_jugadores,estadistica)
+            lista_mejor_totales.append(lista_mejor_por_estadistica[1]["nombre"])
+        dict_mejores = {}
+        for nombre in lista_mejor_totales:
+            print (nombre)
+            
+            if nombre in dict_mejores:
+                dict_mejores[nombre] += 1
+            else:
+                dict_mejores[nombre] = 0
+        valor_max = 0
+        for clave,valor in dict_mejores.items(): 
+            print("{0}:{1}".format(clave,valor))          
+            if valor > valor_max:
+                valor_max = valor
+                nombre_max = clave
+        print("el Jugador con mejores estadisticas es {}".format(nombre_max))
 
         
-        
+
+
 #Invocar al menu
-main()
 
+#main()
 
 
 
